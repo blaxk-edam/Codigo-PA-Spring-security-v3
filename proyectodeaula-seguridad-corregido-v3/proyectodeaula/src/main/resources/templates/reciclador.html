@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>Reciclador</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css"
+          rel="stylesheet">
+
+    <style>
+
+        body{
+            background:#e2e8f0;
+        }
+
+        .navbar{
+            background:linear-gradient(90deg,#0f172a,#14532d);
+        }
+
+        .navbar-brand{
+            color:white;
+            font-size:28px;
+            font-weight:bold;
+        }
+
+        .hero{
+            background:linear-gradient(135deg,#14532d,#16a34a);
+            color:white;
+            border-radius:30px;
+            padding:50px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .card{
+            border:none;
+            border-radius:25px;
+            transition:0.4s;
+            box-shadow:0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .card:hover{
+            transform:translateY(-10px);
+        }
+
+        .stat{
+            text-align:center;
+            padding:30px;
+            color:white;
+            border-radius:25px;
+            font-weight:bold;
+        }
+
+        .verde{
+            background:#16a34a;
+        }
+
+        .azul{
+            background:#2563eb;
+        }
+
+        .gris{
+            background:#334155;
+        }
+
+        .tipo{
+            background:white;
+            border-radius:20px;
+            padding:20px;
+            text-align:center;
+            font-weight:bold;
+            transition:0.4s;
+        }
+
+        .tipo:hover{
+            background:#16a34a;
+            color:white;
+            transform:scale(1.05);
+        }
+
+        .btn{
+            transition:0.3s;
+        }
+
+        .btn:hover{
+            transform:scale(1.05);
+        }
+
+    </style>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+
+    <div class="container">
+
+        <span class="navbar-brand">
+
+            ♻ Panel Reciclador
+
+        </span>
+
+        <form th:action="@{/logout}" method="post" class="ms-auto">
+            <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+        </form>
+
+    </div>
+
+</nav>
+
+<div class="container mt-5">
+
+    <div class="hero mb-5" data-aos="zoom-in">
+
+        <h1 class="display-5">
+
+            Bienvenido Reciclador 🚛
+
+        </h1>
+
+        <p class="lead">
+
+            Gestiona las recolecciones y ayuda al planeta.
+
+        </p>
+
+    </div>
+
+    <div class="row mb-5">
+
+        <div class="col-md-4">
+
+            <div class="stat verde">
+
+                <h1 th:text="${#lists.size(solicitudes)}"></h1>
+
+                <p>Solicitudes Totales</p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="stat azul">
+
+                <h1>24/7</h1>
+
+                <p>Disponibilidad</p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="stat gris">
+
+                <h1>♻</h1>
+
+                <p>Impacto Ambiental</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row mb-5">
+
+        <div class="col-md-2">
+
+            <div class="tipo">
+                📄 PAPEL
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="tipo">
+                📦 CARTON
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="tipo">
+                🧴 PLASTICOS
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="tipo">
+                🔩 METALES
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="tipo">
+                🍾 VIDRIO
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card p-4" data-aos="fade-up">
+
+        <h2 class="mb-4">
+
+            📋 Solicitudes Pendientes
+
+        </h2>
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-dark">
+
+            <tr>
+
+                <th>ID</th>
+                <th>Ciudadano</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Ubicación</th>
+                <th>Acción</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr th:each="s : ${solicitudes}">
+
+                <td th:text="${s.id}"></td>
+
+                <td th:text="${s.ciudadanoNombre}"></td>
+
+                <td th:text="${s.descripcion}"></td>
+
+                <td>
+
+                    <span class="badge bg-warning text-dark"
+                          th:text="${s.estado}">
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <a th:href="${s.direccionMaps}"
+                       target="_blank"
+                       class="btn btn-primary btn-sm">
+
+                        📍 Abrir Maps
+
+                    </a>
+
+                </td>
+
+                <td>
+
+                    <a th:href="@{'/completar/' + ${s.id}}"
+                       class="btn btn-success btn-sm">
+
+                        ✅ Recogido
+
+                    </a>
+
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="card p-4 mt-5" data-aos="zoom-in">
+
+        <h2 class="mb-4">
+
+            🌎 Consejos de Recolección
+
+        </h2>
+
+        <ul class="list-group">
+
+            <li class="list-group-item">
+
+                Separar residuos húmedos y secos.
+
+            </li>
+
+            <li class="list-group-item">
+
+                Verificar materiales reutilizables.
+
+            </li>
+
+            <li class="list-group-item">
+
+                Optimizar rutas de recolección.
+
+            </li>
+
+            <li class="list-group-item">
+
+                Priorizar residuos electrónicos.
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+
+    AOS.init({
+        duration:1200
+    });
+
+</script>
+
+</body>
+</html>

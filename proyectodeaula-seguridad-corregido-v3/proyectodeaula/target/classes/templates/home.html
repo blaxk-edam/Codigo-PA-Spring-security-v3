@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoReciclaje</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial;
+        }
+
+        body{
+            background:#dff5e1;
+        }
+
+        header{
+            background:#1b5e20;
+            color:white;
+            padding:20px;
+            text-align:center;
+            font-size:28px;
+            font-weight:bold;
+        }
+
+        .container{
+            width:90%;
+            margin:auto;
+            margin-top:20px;
+        }
+
+        .card{
+            background:white;
+            border-radius:20px;
+            padding:20px;
+            margin-bottom:20px;
+            box-shadow:0px 0px 15px rgba(0,0,0,0.15);
+        }
+
+        input, select{
+            width:100%;
+            padding:12px;
+            margin-top:10px;
+            border-radius:10px;
+            border:1px solid #ccc;
+        }
+
+        button{
+            margin-top:15px;
+            padding:12px;
+            width:100%;
+            border:none;
+            border-radius:10px;
+            background:#2e7d32;
+            color:white;
+            font-size:16px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#1b5e20;
+        }
+
+        .hidden{
+            display:none;
+        }
+
+        .residuo{
+            border:2px solid #d0ffd4;
+            padding:15px;
+            border-radius:15px;
+            margin-top:15px;
+            background:#f7fff7;
+        }
+
+        iframe{
+            border-radius:15px;
+        }
+
+        h2{
+            margin-bottom:10px;
+            color:#1b5e20;
+        }
+
+        .menu-title{
+            font-size:24px;
+            margin-bottom:20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    ♻ EcoReciclaje Cartagena
+</header>
+
+<div class="container">
+
+    <div id="authSection">
+
+        <div class="card">
+
+            <h2>Registrar Usuario</h2>
+
+            <input type="text" id="registroNombre" placeholder="Nombre">
+
+            <input type="password" id="registroPassword" placeholder="Contraseña">
+
+            <select id="registroRol">
+                <option value="CIUDADANO">Ciudadano</option>
+                <option value="RECICLADOR">Reciclador</option>
+                <option value="ACOPIO">Acopio</option>
+            </select>
+
+            <button onclick="registrarUsuario()">
+                Registrarse
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Iniciar Sesión</h2>
+
+            <input type="text" id="loginNombre" placeholder="Nombre">
+
+            <input type="password" id="loginPassword" placeholder="Contraseña">
+
+            <button onclick="login()">
+                Entrar
+            </button>
+
+        </div>
+
+    </div>
+
+    <div id="panel" class="hidden">
+
+        <div class="card">
+            <h1 id="bienvenida"></h1>
+        </div>
+
+        <div id="ciudadanoPanel" class="hidden">
+
+            <div class="card">
+
+                <h2>Registrar Residuo</h2>
+
+                <input type="text" id="nombreResiduo" placeholder="Nombre">
+
+                <input type="text" id="descripcionResiduo" placeholder="Descripción">
+
+                <input type="text" id="direccionResiduo"
+                       placeholder="Link Google Maps">
+
+                <button onclick="registrarResiduo()">
+                    Registrar Residuo
+                </button>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Mi Historial</h2>
+
+                <div id="historialCiudadano"></div>
+
+            </div>
+
+        </div>
+
+        <div id="recicladorPanel" class="hidden">
+
+            <div class="card">
+
+                <h2>Residuos Disponibles</h2>
+
+                <div id="listaResiduos"></div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Historial Recogido</h2>
+
+                <div id="historialReciclador"></div>
+
+            </div>
+
+        </div>
+
+        <div id="acopioPanel" class="hidden">
+
+            <div class="card">
+
+                <h2>Centro de Acopio</h2>
+
+                <p>
+                    Aquí puedes administrar materiales reciclados.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Puntos de Reciclaje</h2>
+
+            <ul>
+                <li>
+                    <a target="_blank"
+                       href="https://maps.google.com/?q=Getsemani+Cartagena">
+                        Punto A - Getsemaní
+                    </a>
+                </li>
+
+                <li>
+                    <a target="_blank"
+                       href="https://maps.google.com/?q=Bocagrande+Cartagena">
+                        Punto B - Bocagrande
+                    </a>
+                </li>
+
+                <li>
+                    <a target="_blank"
+                       href="https://maps.google.com/?q=Manga+Cartagena">
+                        Punto C - Manga
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Video Educativo</h2>
+
+            <iframe width="100%" height="400"
+                    src="https://www.youtube.com/embed/YiHTNfKJwAw">
+            </iframe>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    let usuarioActual = null;
+
+    async function registrarUsuario(){
+
+        const usuario = {
+            nombre: document.getElementById("registroNombre").value,
+            password: document.getElementById("registroPassword").value,
+            rol: document.getElementById("registroRol").value
+        };
+
+        await fetch("/api/usuarios",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(usuario)
+        });
+
+        alert("Usuario registrado");
+    }
+
+    async function login(){
+
+        const nombre = document.getElementById("loginNombre").value;
+        const password = document.getElementById("loginPassword").value;
+
+        const response = await fetch("/api/usuarios");
+
+        const usuarios = await response.json();
+
+        const usuario = usuarios.find(u =>
+            u.nombre === nombre &&
+            u.password === password
+        );
+
+        if(!usuario){
+            alert("Usuario no encontrado");
+            return;
+        }
+
+        usuarioActual = usuario;
+
+        document.getElementById("authSection")
+            .classList.add("hidden");
+
+        document.getElementById("panel")
+            .classList.remove("hidden");
+
+        document.getElementById("bienvenida")
+            .innerHTML =
+            "Bienvenido " + usuario.nombre +
+            " (" + usuario.rol + ")";
+
+        if(usuario.rol === "CIUDADANO"){
+            document.getElementById("ciudadanoPanel")
+                .classList.remove("hidden");
+
+            cargarHistorialCiudadano();
+        }
+
+        if(usuario.rol === "RECICLADOR"){
+            document.getElementById("recicladorPanel")
+                .classList.remove("hidden");
+
+            cargarResiduos();
+            cargarHistorialReciclador();
+        }
+
+        if(usuario.rol === "ACOPIO"){
+            document.getElementById("acopioPanel")
+                .classList.remove("hidden");
+        }
+    }
+
+    async function registrarResiduo(){
+
+        const residuo = {
+            nombre:document.getElementById("nombreResiduo").value,
+            descripcion:document.getElementById("descripcionResiduo").value,
+            direccion:document.getElementById("direccionResiduo").value,
+            creadoPor:usuarioActual.nombre,
+            estado:"PENDIENTE"
+        };
+
+        await fetch("/api/residuos",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(residuo)
+        });
+
+        alert("Residuo registrado");
+
+        cargarHistorialCiudadano();
+    }
+
+    async function cargarResiduos(){
+
+        const response = await fetch("/api/residuos");
+
+        const residuos = await response.json();
+
+        let html = "";
+
+        residuos.forEach(r => {
+
+            if(r.estado === "PENDIENTE"){
+
+                html += `
+                    <div class="residuo">
+
+                        <h3>${r.nombre}</h3>
+
+                        <p>${r.descripcion}</p>
+
+                        <p>
+                            Publicado por:
+                            ${r.creadoPor}
+                        </p>
+
+                        <a target="_blank"
+                           href="${r.direccion}">
+                            📍 Ver ubicación
+                        </a>
+
+                        <button onclick="recoger(${r.id})">
+                            Recoger
+                        </button>
+
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById("listaResiduos")
+            .innerHTML = html;
+    }
+
+    async function recoger(id){
+
+        await fetch("/api/residuos/recoger/" + id,{
+            method:"PUT"
+        });
+
+        cargarResiduos();
+        cargarHistorialReciclador();
+
+        alert("Residuo recogido");
+    }
+
+    async function cargarHistorialCiudadano(){
+
+        const response = await fetch("/api/residuos");
+
+        const residuos = await response.json();
+
+        let html = "";
+
+        residuos.forEach(r => {
+
+            if(r.creadoPor === usuarioActual.nombre){
+
+                html += `
+                    <div class="residuo">
+
+                        <h3>${r.nombre}</h3>
+
+                        <p>Estado: ${r.estado}</p>
+
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById("historialCiudadano")
+            .innerHTML = html;
+    }
+
+    async function cargarHistorialReciclador(){
+
+        const response = await fetch("/api/residuos");
+
+        const residuos = await response.json();
+
+        let html = "";
+
+        residuos.forEach(r => {
+
+            if(r.estado === "RECOGIDO"){
+
+                html += `
+                    <div class="residuo">
+
+                        <h3>${r.nombre}</h3>
+
+                        <p>Recogido</p>
+
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById("historialReciclador")
+            .innerHTML = html;
+    }
+
+</script>
+
+</body>
+</html>
